@@ -1,3 +1,8 @@
+from os import environ
+from platform import system
+from io import open
+from time import time
+from logging import getLogger
 from tkinter import (
     Frame,
     Button,
@@ -13,16 +18,23 @@ from tkinter import (
     Text,
     RIGHT
 )
-from PIL import Image, ImageDraw, ImageFont
-from os import environ
-from google.cloud import vision
-import io
-from time import time
 
-from . import STATIC_DIR
+from PIL import Image, ImageDraw, ImageFont
+from google.cloud import vision
+
+from environment import STATIC_DIR
+
+logger = getLogger(__name__)
 
 
 class Control(Frame):
+    @property
+    def font(self):
+        if system() == 'Windows':
+            return ImageFont.truetype(f'C:/Windows/Fonts/msgothic.ttc', 15)
+        else:
+            return ImageFont.truetype(f'{STATIC_DIR}/SourceHanSans-VF.otf.ttc', 15)
+
     def __init__(self, master, image_view):
         super().__init__(master)
         self.image_view = image_view
@@ -66,10 +78,10 @@ class Control(Frame):
         self.image_view.original_image.save(f'{STATIC_DIR}/request.jpg', quality=100)
         client = vision.ImageAnnotatorClient()
 
-        with io.open(f'{STATIC_DIR}/request.jpg', 'rb') as image_file:
+        with open(f'{STATIC_DIR}/request.jpg', 'rb') as image_file:
             content = image_file.read()
 
-        image = vision.Image(content=content)
+        image = vision.Image({'content': content})
 
         image_context = vision.ImageContext()
         if self.boolean_var.get():
@@ -81,7 +93,6 @@ class Control(Frame):
             image_context=image_context
         )
         img = Image.open(f'{STATIC_DIR}/request.jpg')
-        font = ImageFont.truetype(f'{STATIC_DIR}/SourceHanSans-VF.otf.ttc', 15)
         draw = ImageDraw.Draw(img)
         texts = []
         for page in response.full_text_annotation.pages:
@@ -93,10 +104,10 @@ class Control(Frame):
                             draw.line(box + [box[0]], width=2, fill='#00ff00')
                             draw.text((symbol.bounding_box.vertices[0].x, symbol.bounding_box.vertices[0].y - 20),
                                       symbol.text,
-                                      font=font,
+                                      font=self.font,
                                       fill='#FF0000')
                             texts.append(symbol.text)
-        draw.text((200, 200), ''.join(texts), font=font, fill='#FF0000')
+        draw.text((200, 200), ''.join(texts), font=self.font, fill='#FF0000')
         self.result = response
         if response.error.message:
             raise Exception(f'{response.error.message}\n'
@@ -118,6 +129,7 @@ class Control(Frame):
                 for paragraph in block.paragraphs:
                     result_sentence += f'\n  Paragraph confidence: {paragraph.confidence}'
                     for word in paragraph.words:
-                        result_sentence += f"\n    Word text: {''.join([symbol.text for symbol in word.symbols])} (confidence: {word.confidence})"
-        print(result_sentence)
+                        context = ''.join([symbol.text for symbol in word.symbols])
+                        result_sentence += f"\n    Word text: {context} (confidence: {word.confidence})"
+        logger.debug(result_sentence)
         self.result_widget.insert('1.0', result_sentence)

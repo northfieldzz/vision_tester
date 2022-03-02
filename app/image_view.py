@@ -12,12 +12,11 @@ from tkinter import (
     Checkbutton,
     BooleanVar,
 )
-import numpy as np
+from numpy import array
 from PIL import Image, ImageTk, ImageEnhance, ImageOps
-
 from cv2 import cv2
 
-from . import STATIC_DIR
+from environment import STATIC_DIR
 
 
 class ImageView(Frame):
@@ -33,7 +32,7 @@ class ImageView(Frame):
         self.canvas = Canvas(bg='black', width=640, height=720)
         self.canvas.bind('<ButtonPress-1>', self.on_click_view)
         self.canvas.pack(side=LEFT)
-        self.original_image = Image.open(open(f'{STATIC_DIR}/sample.jpg', 'rb'))
+        self.original_image = None
 
         self.file_select_button = Button(self, text='Image File', command=self.button_pressed_file_select)
         self.file_select_button.pack(side=TOP, fill='both')
@@ -87,7 +86,7 @@ class ImageView(Frame):
             self.canvas.create_rectangle(
                 self.rectangle[0][0], self.rectangle[0][1],
                 self.rectangle[1][0], self.rectangle[1][1],
-                tag='rectangle', outline='green'
+                tags='rectangle', outline='green'
             )
         self.touch_count += 1
         print(self.rectangle)
@@ -133,11 +132,11 @@ class ImageView(Frame):
             image = ImageOps.grayscale(image)
 
         if self.bitwise_var_otsu.get():
-            array_image = np.array(image)
+            array_image = array(image)
             th, array_image = cv2.threshold(array_image, 128, 192, cv2.THRESH_OTSU)
             image = Image.fromarray(array_image)
         elif self.bitwise_var_triangle.get():
-            array_image = np.array(image)
+            array_image = array(image)
             th, array_image = cv2.threshold(array_image, 128, 192, cv2.THRESH_TRIANGLE)
             image = Image.fromarray(array_image)
         self.original_image = image
@@ -148,6 +147,8 @@ class ImageView(Frame):
 
     @original_image.setter
     def original_image(self, value):
+        if value is None:
+            return
         self._original_image = value
         temp = self._original_image.copy()
         self.w, self.h = self._original_image.size

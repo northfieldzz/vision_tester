@@ -1,9 +1,13 @@
 from os import makedirs
 from tkinter import Frame, NW, LEFT
-from image_view import ImageView
-from control import Control
+from logging import getLogger
+from app.image_view import ImageView
+from app.control import Control
+from environment import STATIC_DIR
 
-STATIC_DIR = './static'
+
+logger = getLogger(__name__)
+
 makedirs(STATIC_DIR, exist_ok=True)
 
 
