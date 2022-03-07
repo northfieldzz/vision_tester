@@ -1,24 +1,29 @@
+import tkinter as tk
 from os import makedirs
-from tkinter import Frame, NW, LEFT
 from logging import getLogger
-from app.image_view import ImageView
+from app.image_viewer import ImageViewer
 from app.control import Control
+from app.log_viewer import LogViewer
+from app.log_viewer import stream_handler
 from environment import STATIC_DIR
 
-
 logger = getLogger(__name__)
+logger.addHandler(stream_handler)
 
 makedirs(STATIC_DIR, exist_ok=True)
 
 
-class VisionTester(Frame):
+class VisionTester(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
 
-        self.image_view = ImageView(self)
-        self.image_view.pack(side=LEFT, anchor=NW, expand=True)
+        self.image_viewer = ImageViewer(self)
+        self.image_viewer.pack(side=tk.LEFT, anchor=tk.NW)
 
-        self.control = Control(self, self.image_view)
-        self.control.pack(side=LEFT)
+        self.log_viewer = LogViewer(self)
+        self.log_viewer.pack(side=tk.LEFT,
+                             anchor=tk.NW,
+                             fill=tk.BOTH)
 
-        self.pack()
+        # self.control = Control(self, self.image_view)
+        # self.control.pack(side=tk.LEFT, fill=tk.BOTH)

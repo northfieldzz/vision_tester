@@ -38,7 +38,6 @@ class Control(Frame):
     def __init__(self, master, image_view):
         super().__init__(master)
         self.image_view = image_view
-        self.pack(fill='both')
 
         frame_1 = Frame(self)
         self.auth_file = StringVar()
