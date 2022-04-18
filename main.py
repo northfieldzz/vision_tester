@@ -1,6 +1,6 @@
 from tkinter import Tk
 from logging import getLogger
-from app import VisionTester
+from src.app import VisionTester
 
 logger = getLogger(__name__)
 

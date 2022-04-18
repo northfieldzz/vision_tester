@@ -1,10 +1,9 @@
 import tkinter as tk
 from os import makedirs
 from logging import getLogger
-from app.image_viewer import ImageViewer
-from app.control import Control
-from app.log_viewer import LogViewer
-from app.log_viewer import stream_handler
+from image_viewer import ImageViewer
+from log_viewer import LogViewer
+from log_viewer import stream_handler
 from environment import STATIC_DIR
 
 logger = getLogger(__name__)

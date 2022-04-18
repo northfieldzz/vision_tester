@@ -3,3 +3,4 @@ opencv-python==4.5.5.62
 Pillow==9.0.1
 google-cloud-vision==2.7.0
 matplotlib==3.5.1
+pyzbar==0.1.8
