@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "==1.22.2"
+opencv-python-headless = "==4.5.5.62"
+pillow = "==9.0.1"
+google-cloud-vision = "==2.7.0"
+matplotlib = "==3.5.1"
+pyzbar = "==0.1.8"
+
+[dev-packages]
+cx-freeze = "==6.11.1"
+
+[scripts]
+dev = "python main.py"
+build = "python setup.py build"
+build_msi = "python setup.py bdist_msi"
+
+[requires]
+python_version = "3.9"
